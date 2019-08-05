@@ -9,8 +9,8 @@ class Tools {
   /**
    * A helper method to calculate RMSE.
    */
-  static Eigen::VectorXd CalculateRMSE(const std::vector<Eigen::VectorXd> &estimations, 
-                                const std::vector<Eigen::VectorXd> &ground_truth);
+  static Eigen::VectorXd CalculateRMSE(const std::vector<Eigen::VectorXd>& estimations,
+                                       const std::vector<Eigen::VectorXd>& ground_truth);
 
   /**
    * A helper method to calculate Jacobians.
@@ -56,6 +56,7 @@ class Tools {
    */
   static Eigen::VectorXd TransformStateToLaserMeasurement(const Eigen::VectorXd& state);
 
+  static double NormalizeAngle(const double& phi);
 };
 
 #endif  // TOOLS_H_

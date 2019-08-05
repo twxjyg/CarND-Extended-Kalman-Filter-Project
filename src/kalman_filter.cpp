@@ -1,6 +1,6 @@
 #include "kalman_filter.h"
-#include "tools.h"
 #include <iostream>
+#include "tools.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -37,10 +37,7 @@ void KalmanFilter::Update(const VectorXd &z) {
    * TODO: update the state by using Kalman Filter equations
    */
   Eigen::VectorXd Y = z - Tools::TransformStateToLaserMeasurement(x_);
-  Eigen::MatrixXd S = H_ * P_ * H_.transpose() + R_;
-  Eigen::MatrixXd K = P_ * H_.transpose() * S.inverse();
-  x_ = x_ + (K * Y);
-  P_ = (Eigen::MatrixXd::Identity(4, 4) - K * H_) * P_;
+  CommonUpdate(Y);
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -48,8 +45,13 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
    * TODO: update the state by using Extended Kalman Filter equations
    */
   Eigen::VectorXd Y = z - Tools::TransformStateToRadarMeasurement(x_);
+  Y(1) = Tools::NormalizeAngle(Y(1));
+  CommonUpdate(Y);
+}
+
+void KalmanFilter::CommonUpdate(const Eigen::VectorXd &Y) {
   Eigen::MatrixXd S = H_ * P_ * H_.transpose() + R_;
   Eigen::MatrixXd K = P_ * H_.transpose() * S.inverse();
   x_ = x_ + (K * Y);
-  P_ = (Eigen::MatrixXd::Identity(4, 4) - K * H_) * P_;
+  P_ = P_ - K * H_ * P_;
 }
